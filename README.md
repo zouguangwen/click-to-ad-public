@@ -1,61 +1,106 @@
 # click-to-ad
 
-一个把商品链接快速整理成广告视频素材流的实验项目。
+Turn a product URL into a draft short-form ad workflow.
 
-## 开源前说明
+This project analyzes a product page, extracts product info and images, lets you choose a video style, previews the generated prompt, and then sends the job to a video generation API.
 
-这个仓库不会提供任何可直接使用的私有 API Key。
-如果你要本地体验，请自己准备以下环境变量：
+## What It Does
 
-- `DATABASE_URL`
-- `PORT`
-- `APIYI_API_KEY`
-- `KIMI_API_KEY`
+- Paste a product URL and extract title, description, logo, and images
+- Use Kimi to generate a shorter product name and brand color palette
+- Let the user review and adjust the product kit before generation
+- Build a final ad prompt from reusable style templates
+- Preview the prompt and selected reference image before spending API credits
+- Generate a video through APIYI
+- Fall back to a mock video flow when `APIYI_API_KEY` is not configured
 
-请复制 `.env.example` 为 `.env`，再填入你自己的配置。
+## Workflow
 
-## 本地运行
+1. Analyze a product URL
+2. Confirm or edit the product kit
+3. Choose an ad style
+4. Preview the final prompt
+5. Submit the generation task
+6. Poll task status and show the result
+
+## Stack
+
+- React + Vite frontend
+- Express backend
+- Drizzle ORM + PostgreSQL
+- Multer for image upload
+- Sharp for image processing
+- Kimi API for product metadata extraction
+- APIYI video API for video generation
+
+## Getting Started
+
+### 1. Install dependencies
 
 ```bash
 npm install
+```
+
+### 2. Create your local env file
+
+```bash
+cp .env.example .env
+```
+
+Then fill in your own values in `.env`.
+
+### 3. Required environment variables
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `PORT`: server port, for example `3000`
+- `KIMI_API_KEY`: used for short product name and brand color extraction
+- `APIYI_API_KEY`: used for video generation
+
+Example:
+
+```env
+DATABASE_URL=postgresql://localhost:5432/click_to_ad
+PORT=3000
+KIMI_API_KEY=your_kimi_api_key
+APIYI_API_KEY=your_apiyi_api_key
+```
+
+### 4. Run the app
+
+```bash
 npm run dev
 ```
 
-默认开发地址：
+Open:
 
 ```text
 http://localhost:3000
 ```
 
-## 功能概览
+## Scripts
 
-- 输入商品链接，提取标题、描述、图片和品牌信息
-- 使用 Kimi 提取更短的商品名和品牌色
-- 基于广告风格模板拼接视频提示词
-- 调用 APIYI 的视频接口生成广告视频
-- 当视频 API 未配置时，项目会回退到 mock 视频流程
+- `npm run dev`: start the local dev server
+- `npm run build`: build the production bundle
+- `npm run start`: run the production build
+- `npm run check`: run TypeScript checks
+- `npm run db:push`: push the schema with Drizzle
 
-## 环境变量
+## Running Without Full API Access
 
-### `APIYI_API_KEY`
+You can still explore most of the flow without a video API key.
 
-用于视频生成接口。
+- If `APIYI_API_KEY` is missing, the app uses a mock video result
+- If `KIMI_API_KEY` is missing, the app falls back to local title cleanup and default brand colors
 
-### `KIMI_API_KEY`
+That makes it possible to try the UX before wiring up paid APIs.
 
-用于商品名和品牌色提取。
+## Notes
 
-### `DATABASE_URL`
+- This repo does not include any private API keys
+- Do not commit your `.env`
+- Uploaded local images are stored under `uploads/` in local development
+- The video generation quality and cost depend on the external provider you configure
 
-用于本地 Postgres 数据库连接。
+## Repository Scope
 
-### `PORT`
-
-Node 服务端口，默认可用 `3000`。
-
-## 开源建议
-
-- 不要提交 `.env`
-- 不要在文档、截图、curl 示例里写真实密钥
-- 如果密钥已经提交过，先去服务商后台立即轮换
-- 如果你想保留当前私有仓库历史，建议新建一个公开仓库，只推送清理后的代码
+This is the public shareable version of the project. Internal notes, private deployment settings, and private API credentials are intentionally excluded.
